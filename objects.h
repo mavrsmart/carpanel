@@ -36,10 +36,10 @@ extern int dashWidth;   // Width of the texture image.
 extern int dashHeight;  // Height of the texture image.
 
 GLuint loadTexture( char* fileName );
+void str_cp(char **s1, char *s2,char *s3);
 void drawquad(GLuint texture,int x,int y,int x1,int y1);
 void drawtriangle(GLuint texture,int x,int y,int x1,int y1);
 void drawdashboard(GLuint texture,int x,int y,int x1,int y1);
-void drawstrela(GLuint texture,int x,int y,int xlen,int ylen,float angle,int triangle);
 void drawspeedometr(float speed);
 void drawtahometr(float speed);
 void drawfuel(float speed);

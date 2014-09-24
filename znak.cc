@@ -24,20 +24,7 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 
-void str_cp(char **s1, char *s2,char *s3){
-  *s1 = new char [strlen(s2)+strlen(s3)+1];
-  char *temp = *s1;
 
-  while (*s2)
-  {
-     *temp++ = *s2++;
-  }
-  while (*s3)
-  {
-     *temp++ = *s3++;
-  }
-  *temp = '\0';
-}
 
 void znak::setactive(int tru){
 	enable=tru;

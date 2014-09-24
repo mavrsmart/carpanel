@@ -20,6 +20,7 @@
 //  <user@host>
 
 #include "znak.h"
+#include "dialgauge.h"
 #include <GL/gl.h>
 #include <GL/glut.h>
 
@@ -43,13 +44,9 @@ extern int protivotuman;
 extern int torm;
 
 
-extern float oldanglespeedometr;
-extern float oldangletahometr;
-extern float oldanglefuel;
-extern float oldangletemp;
-
 extern GLuint dashboard,textspeed,texttahometr,textfuel,texttemp;
 
+extern dialgauge dg_speed,dg_tahometr,dg_fuel,dg_temp;
 extern znak zn_fuel,zn_dalnsvet,zn_imobilizer,zn_maslo,zn_opendoor,zn_peregrev,zn_povorlevo,zn_povorpravo,zn_power,zn_protivotuman,zn_torm;
 
 #endif // _VARS_H_

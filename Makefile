@@ -3,7 +3,7 @@
 
 CC = g++
 CXXFLAGS = -Wall 
-OBJECTS = znak.o objects.o vars.o setings.o carpanel.o
+OBJECTS = dialgauge.o znak.o objects.o vars.o setings.o carpanel.o
 INCFLAGS =
 LDFLAGS =
 LIBS =   -lGL -lGLU -lglut -lpng -lfreeimage -liniparser

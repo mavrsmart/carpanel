@@ -22,6 +22,7 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include "znak.h"
+#include "dialgauge.h"
 #include "iniparser.h"
 
 dictionary* ini;
@@ -44,11 +45,7 @@ int torm=0;
 //***
 
 
-float oldanglespeedometr;
-float oldangletahometr;
-float oldanglefuel;
-float oldangletemp;
+GLuint dashboard;
 
-GLuint dashboard,textspeed,texttahometr,textfuel,texttemp;
-
+dialgauge dg_speed,dg_tahometr,dg_fuel,dg_temp;
 znak zn_fuel,zn_dalnsvet,zn_imobilizer,zn_maslo,zn_opendoor,zn_peregrev,zn_povorlevo,zn_povorpravo,zn_power,zn_protivotuman,zn_torm;

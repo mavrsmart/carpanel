@@ -32,6 +32,7 @@
 #include "vars.h"
 #include "objects.h"
 #include "znak.h"
+#include "dialgauge.h"
 
 using namespace std;
 
@@ -52,13 +53,17 @@ void display()
                 glClear(GL_COLOR_BUFFER_BIT);
 				glLoadIdentity();                                       // Сброс просмотра
 			//Отрисовка панели
-				drawdashboard(dashboard,sets.dashboardtemp_x,sets.dashboardtemp_y,sets.dashboardtemp_x1,sets.dashboardtemp_y1);
 
+    	drawdashboard(dashboard,sets.dashboardtemp_x,sets.dashboardtemp_y,sets.dashboardtemp_x1,sets.dashboardtemp_y1);
+
+			
+glPushMatrix();
+			
 //Эмуляция значений в деморежиме
 if (sets.testmode==1){
 	if(i<=70){speed=0;}else{speed=180;}
 
-	if(i2<=4000){tahometr=0;}else{tahometr=6000;}
+	if(i2<=4000){tahometr=0;maslo=1;}else{tahometr=6000;maslo=0;}
 	fuel=i3;
 	temp=i3;
 }
@@ -93,11 +98,16 @@ zn_protivotuman.draw();
 zn_torm.draw();
 
 //Отображение стрелок
-drawspeedometr(speed);			
-drawtahometr(tahometr);
-drawfuel(fuel);
-drawtemp(temp);
+dg_speed.draw(speed);
+dg_tahometr.draw(tahometr);
+dg_fuel.draw(fuel);
+dg_temp.draw(temp);
+//drawspeedometr(speed);			
+//drawtahometr(tahometr);
+//drawfuel(fuel);
+//drawtemp(temp);
 
+glPopMatrix();
 
 glutSwapBuffers();
 		}
@@ -157,26 +167,25 @@ int main(int argc, char * argv[])
 {
 	int w,h;
        readini();	
-	   oldanglespeedometr=sets.speedometr_startangle;
-       oldangletahometr=sets.tahometr_startangle;
-       oldanglefuel=sets.fuel_startangle;
-       oldangletemp=sets.temp_startangle;
-
        glutInit(&argc, argv);
-        glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB); /*Включаем двойную буферизацию*/
-       
+        //glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB); /*Включаем двойную буферизацию*/
+  		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
         glutInitWindowSize(sets.xres, sets.yres);
         glutCreateWindow("CarPanel");
 
+//		glDisable(GL_VSYNC);
+	
 		glEnable(GL_TEXTURE_2D);
         dashboard=loadTexture(sets.dashboardtexture);
 		dashPixels=imgPixels;
 		dashWidth=imgWidth;
 		dashHeight=imgHeight;
-        textspeed=loadTexture(sets.speedometrtexture);
-        texttahometr=loadTexture(sets.tahometrtexture);
-        textfuel=loadTexture(sets.fueltexture);
-        texttemp=loadTexture(sets.temptexture);
+
+		dg_speed.loadconfig("speedometr");
+		dg_tahometr.loadconfig("tahometr");
+		dg_fuel.loadconfig("fuel");
+		dg_temp.loadconfig("temp");
+	
 		zn_power.loadconfig("zn_power");
 		zn_fuel.loadconfig("zn_fuel");
 		zn_dalnsvet.loadconfig("zn_dalnsvet");
@@ -213,9 +222,9 @@ int main(int argc, char * argv[])
 		glEnable(GL_POLYGON_SMOOTH);
 		glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 	
-	//  glClearDepth( 1.0f );              // Разрешить очистку буфера глубины
-//  glEnable( GL_DEPTH_TEST );            // Разрешить тест глубины
-//  glDepthFunc( GL_LEQUAL );            // Тип теста глубины
+	  glClearDepth( 1.0f );              // Разрешить очистку буфера глубины
+   // glEnable( GL_DEPTH_TEST );            // Разрешить тест глубины
+ //  glDepthFunc( GL_LEQUAL );            // Тип теста глубины
 	
 
   glEnable(GL_LIGHT0); 
@@ -224,8 +233,11 @@ int main(int argc, char * argv[])
   glEnable(GL_COLOR_MATERIAL);  
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
           
+
+
 	
         glutReshapeFunc(reshape);
+
         glutIdleFunc(idle);
 		glutDisplayFunc(display);
        
