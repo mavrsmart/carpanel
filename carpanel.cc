@@ -33,6 +33,8 @@
 #include "objects.h"
 #include "znak.h"
 #include "dialgauge.h"
+#include "nets.h"
+#include <pthread.h>
 
 using namespace std;
 
@@ -46,10 +48,14 @@ float i3=0;
 
 int64_t timertick=0;
 
+dialgauge* dgp; 
+znak* znp; 
 
 void display()
         {
-			//Очистка экрана
+			int w;
+
+				//Очистка экрана
                 glClear(GL_COLOR_BUFFER_BIT);
 				glLoadIdentity();                                       // Сброс просмотра
 			//Отрисовка панели
@@ -58,55 +64,22 @@ void display()
 
 			
 glPushMatrix();
+
+        for(w=0;w<127;w++){
+			if(objects[w].enable==1){
+				if(objects[w].type==0){
+					//Рисуем класс dialgauge
+					objects[w].dgp->draw(variables[w]);
+				}
+				if(objects[w].type==1){
+					//Рисуем класс znak
+					objects[w].znp->setactive(variables[w]);
+					objects[w].znp->draw();
+				}
+			}
+		}
+
 			
-//Эмуляция значений в деморежиме
-if (sets.testmode==1){
-	if(i<=70){speed=0;}else{speed=180;}
-
-	if(i2<=4000){tahometr=0;maslo=1;}else{tahometr=6000;maslo=0;}
-	fuel=i3;
-	temp=i3;
-}
-
-//Отображение знаков по порогам
-if(temp>90){zn_peregrev.setactive(1);} else {zn_peregrev.setactive(0);};
-if(fuel<5){zn_fuel.setactive(1);} else {zn_fuel.setactive(0);};
-
-//Активация знаков по значениям
-zn_dalnsvet.setactive(dalnsvet);
-zn_imobilizer.setactive(imobilizer);
-zn_maslo.setactive(maslo);
-zn_opendoor.setactive(opendoor);
-zn_povorlevo.setactive(povorlevo);
-zn_povorpravo.setactive(povorpravo);
-zn_power.setactive(power);
-zn_protivotuman.setactive(protivotuman);
-zn_torm.setactive(torm);
-
-
-//Отображение знаков			
-zn_fuel.draw();
-zn_dalnsvet.draw();
-zn_imobilizer.draw();
-zn_maslo.draw();
-zn_opendoor.draw();
-zn_peregrev.draw();
-zn_povorlevo.draw();
-zn_povorpravo.draw();
-zn_power.draw();
-zn_protivotuman.draw();
-zn_torm.draw();
-
-//Отображение стрелок
-dg_speed.draw(speed);
-dg_tahometr.draw(tahometr);
-dg_fuel.draw(fuel);
-dg_temp.draw(temp);
-//drawspeedometr(speed);			
-//drawtahometr(tahometr);
-//drawfuel(fuel);
-//drawtemp(temp);
-
 glPopMatrix();
 
 glutSwapBuffers();
@@ -127,36 +100,6 @@ glutSwapBuffers();
 
         void idle()
         {
-
-			usleep(sets.sleepu);//1ms
-			timertick++;
-			if (sets.testmode==1){
-			if(timertick==1){
-				//Для демо режима
-				if(i>=220){i=0;}else{i=i+0.1;}
-				if(i2>=8000){i2=0;}else{i2=i2+1;}
-				if(i3>=100){i3=0;}else{i3=i3+0.01;}
-				timertick=0;
-			}
-			}
-
-
-				//Для настройки
-				if (sets.testmode==2){
-				if(timertick==sets.timerticks){
-					speed=speed+10;
-					if(speed==220){speed=0;}
-					tahometr=tahometr+500;
-					if(tahometr==8500){tahometr=0;}
-					fuel=fuel+25;
-					if(fuel==125){fuel=0;}
-					temp=temp+10;
-					if(temp==120){temp=0;}
-				timertick=0;
-				}
-				}
-
-
 			
 			glutPostRedisplay();
         }
@@ -166,7 +109,24 @@ glutSwapBuffers();
 int main(int argc, char * argv[])
 {
 	int w,h;
-       readini();	
+	
+	pthread_t thread_sock;
+    int  iret_sock;
+	
+	   for(w=0;w<128;w++){variables[w]=0;}
+	   for(w=0;w<128;w++){objects[w].enable=0;}
+       readini();
+
+	//socket thread
+
+	iret_sock =pthread_create( &thread_sock,NULL,startsocket, &iret_sock);
+	     if(iret_sock)
+	     {
+	         fprintf(stderr,"Error - pthread_create() return code: %d\n",iret_sock);
+	         exit(EXIT_FAILURE);
+	     }
+	
+	///socket thread
        glutInit(&argc, argv);
         //glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB); /*Включаем двойную буферизацию*/
   		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -181,23 +141,20 @@ int main(int argc, char * argv[])
 		dashWidth=imgWidth;
 		dashHeight=imgHeight;
 
-		dg_speed.loadconfig("speedometr");
-		dg_tahometr.loadconfig("tahometr");
-		dg_fuel.loadconfig("fuel");
-		dg_temp.loadconfig("temp");
-	
-		zn_power.loadconfig("zn_power");
-		zn_fuel.loadconfig("zn_fuel");
-		zn_dalnsvet.loadconfig("zn_dalnsvet");
-		zn_imobilizer.loadconfig("zn_imobilizer");
-		zn_maslo.loadconfig("zn_maslo");
-		zn_opendoor.loadconfig("zn_opendoor");
-		zn_peregrev.loadconfig("zn_peregrev");
-		zn_povorlevo.loadconfig("zn_povorlevo");
-		zn_povorpravo.loadconfig("zn_povorpravo");
-		zn_power.loadconfig("zn_power");
-		zn_protivotuman.loadconfig("zn_protivotuman");
-		zn_torm.loadconfig("zn_torm");
+        for(w=0;w<127;w++){
+			if(objects[w].enable==1){
+				if(objects[w].type==0){
+					//Создаем класс dialgauge
+					objects[w].dgp=new dialgauge;
+					objects[w].dgp->loadconfig(objects[w].name);
+				}
+				if(objects[w].type==1){
+					//Создаем класс znak
+					objects[w].znp=new znak;
+					objects[w].znp->loadconfig(objects[w].name);
+				}
+			}
+		}
 
 
 		glEnable(GL_BLEND); //Прозрачность

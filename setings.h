@@ -31,6 +31,7 @@ extern struct
 {
 	int sleepu;
 	int timerticks;
+	int sockport;
 
 	int testmode;
     int xres;

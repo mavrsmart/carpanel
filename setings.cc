@@ -32,6 +32,7 @@ struct sets
 {
 	int sleepu;
 	int timerticks;
+	int sockport;
 	
 	int testmode;
     int xres;
@@ -48,9 +49,13 @@ struct sets
 
 
 void readini(){
+	char* st;
+	char st2 [250];
+	int i;
 	ini=iniparser_load("carpanel.ini");
 	sets.sleepu=iniparser_getint(ini,"system:sleepu",1000);
 	sets.timerticks=iniparser_getint(ini,"system:timerticks",1000);
+	sets.sockport=iniparser_getint(ini,"system:port",17000);
 	
 	sets.testmode=iniparser_getint(ini,"system:testmode",0);
 	sets.xres=iniparser_getint(ini,"system:xres",1280);
@@ -62,5 +67,14 @@ void readini(){
 	sets.dashboardtemp_x1=iniparser_getint(ini,"dashboard:temp_x1",1280);
 	sets.dashboardtemp_y1=iniparser_getint(ini,"dashboard:temp_y1",600);
 
+	for(i=0;i<127;i++){
+		sprintf(st2,"objects:enable_%d",i);
+		objects[i].enable=iniparser_getint(ini,st2,0);
+		sprintf(st2,"objects:type_%d",i);
+		objects[i].type=iniparser_getint(ini,st2,0);
+		sprintf(st2,"objects:name_%d",i);
+		objects[i].name=iniparser_getstring(ini,st2,"");
+	}
+	
 
 };

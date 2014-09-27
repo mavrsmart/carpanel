@@ -1,17 +1,17 @@
 
 ## Created by Anjuta
 
-CC = g++
+CC = gcc
 CXXFLAGS = -Wall
-OBJECTS = nets.o dialgauge.o znak.o objects.o vars.o setings.o carpanel.o
+OBJECTS = dispdemo.o
 INCFLAGS = 
 LDFLAGS =
-LIBS = -lGL -lGLU -lglut -lpng -lfreeimage -liniparser -lpthread
+LIBS = 
 
-all: carpanel
+all: dispdemo
 
-carpanel: $(OBJECTS)
-	$(CC) $(CXXFLAGS) -o carpanel $(OBJECTS) $(LDFLAGS) $(LIBS)
+dispdemo: $(OBJECTS)
+	$(CC) $(CXXFLAGS) -o dispdemo $(OBJECTS) $(LDFLAGS) $(LIBS)
 
 .SUFFIXES:
 .SUFFIXES:	.c .cc .C .cpp .o

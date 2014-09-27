@@ -1,6 +1,6 @@
-// vars.c
+// net.h
 //
-// Copyright (C) 2014 mavrsmart <mavr@smarts.zp.ua>
+// Copyright (C) 2014 - user
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,34 +14,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-//           vars.c
-//  Чт Август 21 23:28:15 2014
-//  Copyright  2014  user
-//  <user@host>
 
-#include <GL/gl.h>
-#include <GL/glut.h>
-#include "znak.h"
-#include "dialgauge.h"
-#include "iniparser.h"
+extern  int sock;
+extern  socklen_t size;
+extern  fd_set active_fd_set, read_fd_set;
 
-
-dictionary* ini;
-
-struct obj
-{
-	dialgauge* dgp;
-	znak* znp;
-	int enable;
-	int type;
-	char* name;
-};
-
-float variables[128];
-
-obj objects[128];
-
-
-
-GLuint dashboard;
-
+void * startsocket(void *arg);
+void doprocessing (int sock);
+void read_from_socket();
